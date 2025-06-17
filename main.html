@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha de RPG</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+        }
+        nav {
+            display: flex;
+            background-color: #444;
+        }
+        nav button {
+            flex: 1;
+            padding: 10px;
+            background: #444;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background: #666;
+        }
+        .tab {
+            display: none;
+            padding: 20px;
+        }
+        .active {
+            display: block;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+            background: #2e2e2e;
+            color: white;
+            border: 1px solid #555;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>Ficha de RPG</header>
+
+<nav>
+    <button onclick="showTab('info')">Informações</button>
+    <button onclick="showTab('status')">Status e Ficha</button>
+    <button onclick="showTab('dados')">Dados</button>
+    <button onclick="showTab('itens')">Itens</button>
+    <button onclick="showTab('anotacoes')">Anotações</button>
+</nav>
+
+<div id="info" class="tab active">
+    <h2>Informações do Personagem</h2>
+    <div class="section">
+        <label>Nome:</label>
+        <input type="text">
+        <label>Raça:</label>
+        <input type="text">
+        <label>Classe:</label>
+        <input type="text">
+        <label>Idade:</label>
+        <input type="text">
+        <label>Histórico:</label>
+        <textarea rows="4"></textarea>
+    </div>
+</div>
+
+<div id="status" class="tab">
+    <h2>Status e Ficha</h2>
+    <div class="section">
+        <label>Nível:</label>
+        <input type="number">
+        <label>Vida:</label>
+        <input type="number">
+        <label>Mana:</label>
+        <input type="number">
+        <label>Sanidade:</label>
+        <input type="number">
+    </div>
+    <div class="section">
+        <h3>Atributos (Exemplo)</h3>
+        <label>Força:</label> 
+        <input type="number" id="forca">
+        <button onclick="rolar('forca')">Rolar d100</button>
+        <div id="resultado-forca"></div>
+    </div>
+</div>
+
+<div id="dados" class="tab">
+    <h2>Rolagem de Dados</h2>
+    <div class="section">
+        <button onclick="rolarDado(4)">D4</button>
+        <button onclick="rolarDado(6)">D6</button>
+        <button onclick="rolarDado(8)">D8</button>
+        <button onclick="rolarDado(10)">D10</button>
+        <button onclick="rolarDado(12)">D12</button>
+        <button onclick="rolarDado(20)">D20</button>
+        <button onclick="rolarDado(100)">D100</button>
+        <div id="resultado-dado"></div>
+    </div>
+</div>
+
+<div id="itens" class="tab">
+    <h2>Inventário</h2>
+    <div class="section">
+        <label>Item:</label>
+        <input type="text">
+        <label>Descrição:</label>
+        <textarea rows="2"></textarea>
+        <label>Peso:</label>
+        <input type="number">
+        <label>Quantidade:</label>
+        <input type="number">
+    </div>
+</div>
+
+<div id="anotacoes" class="tab">
+    <h2>Anotações</h2>
+    <textarea rows="10" placeholder="Escreva aqui suas anotações..."></textarea>
+</div>
+
+<script>
+    function showTab(tabId) {
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    function rolar(atributoId) {
+        const atributo = parseInt(document.getElementById(atributoId).value) || 0;
+        const rolagem = Math.floor(Math.random() * 100) + 1;
+        const total = rolagem + atributo;
+        document.getElementById('resultado-' + atributoId).innerText = 
+            `Rolagem: ${rolagem} + Atributo: ${atributo} = Total: ${total}`;
+    }
+
+    function rolarDado(lados) {
+        const resultado = Math.floor(Math.random() * lados) + 1;
+        document.getElementById('resultado-dado').innerText = `Resultado do D${lados}: ${resultado}`;
+    }
+</script>
+
+</body>
+</html>
