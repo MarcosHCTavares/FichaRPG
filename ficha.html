@@ -1,160 +1,1330 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Ficha de RPG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Character Manager</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #1e1e1e;
-            color: #f0f0f0;
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
         header {
-            background-color: #333;
-            padding: 10px;
-            text-align: center;
-            font-size: 24px;
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
         nav {
             display: flex;
-            background-color: #444;
+            gap: 1rem;
+            margin-top: 1rem;
         }
-        nav button {
-            flex: 1;
-            padding: 10px;
-            background: #444;
+        
+        nav a {
             color: white;
-            border: none;
-            cursor: pointer;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
         }
-        nav button:hover {
-            background: #666;
+        
+        nav a:hover {
+            background-color: var(--secondary);
         }
-        .tab {
+        
+        nav a.active {
+            background-color: var(--accent);
+        }
+        
+        .tab-content {
             display: none;
-            padding: 20px;
         }
-        .active {
+        
+        .tab-content.active {
             display: block;
         }
-        input, textarea, select {
-            width: 100%;
-            padding: 5px;
-            margin: 5px 0;
-            background: #2e2e2e;
-            color: white;
-            border: 1px solid #555;
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
-        .section {
-            margin-bottom: 20px;
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .attribute-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .attribute-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .attribute-mod {
+            font-size: 1.25rem;
+            color: var(--secondary);
+        }
+        
+        .dice-result {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .critical {
+            color: var(--danger);
+            animation: pulse 0.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .hit {
+            color: var(--success);
+        }
+        
+        .miss {
+            color: var(--danger);
+        }
+        
+        .equipment-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #characterSheet {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .sheet-section {
+            margin-bottom: 2rem;
+        }
+        
+        .sheet-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .sheet-col {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        #subraceGroup {
+            transition: all 0.3s ease;
+        }
+        
+        .trait-source {
+            font-size: 0.8em;
+            color: var(--secondary);
+            margin-left: 0.5rem;
         }
     </style>
 </head>
 <body>
+    <header>
+        <div class="container">
+            <h1>🎲 RPG Character Manager</h1>
+            <nav>
+                <a href="#" class="nav-link active" data-tab="create">Criar Personagem</a>
+                <a href="#" class="nav-link" data-tab="view" id="viewTab">Ver Ficha</a>
+                <a href="#" class="nav-link" data-tab="combat">Calculadora de Combate</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container">
+        <!-- Character Creation Tab -->
+        <div id="create" class="tab-content active">
+            <h2>Criar Novo Personagem</h2>
+            
+            <form id="characterForm">
+                <div class="card">
+                    <h3>Informações Básicas</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="charName">Nome do Personagem</label>
+                            <input type="text" id="charName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="playerName">Nome do Jogador</label>
+                            <input type="text" id="playerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="charLevel">Nível</label>
+                            <input type="number" id="charLevel" min="1" max="20" value="1" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Raça e Classe</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="charRace">Raça</label>
+                            <select id="charRace" required>
+                                <option value="">Selecione uma raça</option>
+                                <option value="Anão">Anão</option>
+                                <option value="Elfo">Elfo</option>
+                                <option value="Humano">Humano</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="subraceGroup" style="display: none;">
+                            <label for="charSubrace">Sub-Raça</label>
+                            <select id="charSubrace" required>
+                                <option value="">Selecione uma sub-raça</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="charClass">Classe</label>
+                            <select id="charClass" required>
+                                <option value="">Selecione uma classe</option>
+                                <option value="Guerreiro">Guerreiro</option>
+                                <option value="Mago">Mago</option>
+                                <option value="Ladino">Ladino</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Atributos</h3>
+                    <div class="grid">
+                        <div class="attribute-box">
+                            <label for="strValue">Força (FOR)</label>
+                            <input type="number" id="strValue" min="1" max="30" value="10" class="attribute-input">
+                            <div class="attribute-mod" id="strMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <label for="dexValue">Destreza (DES)</label>
+                            <input type="number" id="dexValue" min="1" max="30" value="10" class="attribute-input">
+                            <div class="attribute-mod" id="dexMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <label for="conValue">Constituição (CON)</label>
+                            <input type="number" id="conValue" min="1" max="30" value="10" class="attribute-input">
+                            <div class="attribute-mod" id="conMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <label for="intValue">Inteligência (INT)</label>
+                            <input type="number" id="intValue" min="1" max="30" value="10" class="attribute-input">
+                            <div class="attribute-mod" id="intMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <label for="wisValue">Sabedoria (SAB)</label>
+                            <input type="number" id="wisValue" min="1" max="30" value="10" class="attribute-input">
+                            <div class="attribute-mod" id="wisMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <label for="chaValue">Carisma (CAR)</label>
+                            <input type="number" id="chaValue" min="1" max="30" value="10" class="attribute-input">
+                            <div class="attribute-mod" id="chaMod">+0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Perícias</h3>
+                    <p>Selecione 2 perícias:</p>
+                    <div class="grid" id="skillsContainer">
+                        <!-- Skills will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Equipamentos</h3>
+                    <div id="equipmentContainer">
+                        <p>Equipamentos iniciais baseados na classe:</p>
+                        <ul id="initialEquipment">
+                            <!-- Initial equipment will be populated by JavaScript -->
+                        </ul>
+                        
+                        <div class="form-group">
+                            <label>Adicionar equipamento:</label>
+                            <div class="grid">
+                                <select id="equipmentSelect">
+                                    <option value="">Selecione um item</option>
+                                    <option value="Espada Longa">Espada Longa (3kg)</option>
+                                    <option value="Adaga">Adaga (1kg)</option>
+                                    <option value="Escudo">Escudo (6kg)</option>
+                                    <option value="Armadura Leve">Armadura Leve (8kg)</option>
+                                    <option value="Armadura Pesada">Armadura Pesada (20kg)</option>
+                                    <option value="Kit de Aventureiro">Kit de Aventureiro (10kg)</option>
+                                    <option value="Poção de Cura">Poção de Cura (0.5kg)</option>
+                                </select>
+                                <input type="number" id="equipmentQty" min="1" value="1" placeholder="Quantidade">
+                                <button type="button" id="addEquipment">Adicionar</button>
+                            </div>
+                        </div>
+                        
+                        <h4>Equipamentos Adicionais</h4>
+                        <ul id="additionalEquipment">
+                            <!-- Additional equipment will be added here -->
+                        </ul>
+                    </div>
+                    <p><strong>Peso total:</strong> <span id="totalWeight">0</span> kg</p>
+                </div>
+                
+                <button type="submit">Criar Personagem</button>
+            </form>
+        </div>
+        
+        <!-- Character Sheet Tab -->
+        <div id="view" class="tab-content">
+            <div id="characterSheet" class="hidden">
+                <h2>Ficha do Personagem</h2>
+                
+                <div class="sheet-section">
+                    <div class="sheet-row">
+                        <div class="sheet-col">
+                            <h3>Informações Básicas</h3>
+                            <p><strong>Nome:</strong> <span id="sheetName"></span></p>
+                            <p><strong>Jogador:</strong> <span id="sheetPlayer"></span></p>
+                            <p><strong>Nível:</strong> <span id="sheetLevel"></span> <span id="sheetClass"></span></p>
+                            <p><strong>Raça:</strong> <span id="sheetRace"></span></p>
+                        </div>
+                        <div class="sheet-col">
+                            <h3>Status</h3>
+                            <p><strong>Vida:</strong> <span id="sheetHP"></span></p>
+                            <p><strong>CA:</strong> <span id="sheetAC"></span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sheet-section">
+                    <h3>Atributos</h3>
+                    <div class="grid">
+                        <div class="attribute-box">
+                            <div>Força (FOR)</div>
+                            <div class="attribute-value" id="sheetSTR">10</div>
+                            <div class="attribute-mod" id="sheetSTRMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <div>Destreza (DES)</div>
+                            <div class="attribute-value" id="sheetDEX">10</div>
+                            <div class="attribute-mod" id="sheetDEXMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <div>Constituição (CON)</div>
+                            <div class="attribute-value" id="sheetCON">10</div>
+                            <div class="attribute-mod" id="sheetCONMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <div>Inteligência (INT)</div>
+                            <div class="attribute-value" id="sheetINT">10</div>
+                            <div class="attribute-mod" id="sheetINTMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <div>Sabedoria (SAB)</div>
+                            <div class="attribute-value" id="sheetWIS">10</div>
+                            <div class="attribute-mod" id="sheetWISMod">+0</div>
+                        </div>
+                        <div class="attribute-box">
+                            <div>Carisma (CAR)</div>
+                            <div class="attribute-value" id="sheetCHA">10</div>
+                            <div class="attribute-mod" id="sheetCHAMod">+0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sheet-section">
+                    <div class="sheet-row">
+                        <div class="sheet-col">
+                            <h3>Perícias</h3>
+                            <div id="sheetSkills"></div>
+                        </div>
+                        <div class="sheet-col">
+                            <h3>Traços Raciais</h3>
+                            <div id="sheetTraits"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sheet-section">
+                    <h3>Equipamentos</h3>
+                    <div id="sheetEquipment"></div>
+                    <p><strong>Peso total:</strong> <span id="sheetWeight">0</span> kg</p>
+                </div>
+                
+                <div class="sheet-section">
+                    <h3>Habilidades</h3>
+                    <div id="sheetAbilities"></div>
+                </div>
+                
+                <button id="saveCharacter">Salvar Ficha</button>
+                <button id="downloadCharacter">Baixar Ficha (JSON)</button>
+            </div>
+            
+            <div id="noCharacter" class="card">
+                <h3>Nenhum personagem criado</h3>
+                <p>Crie um personagem na aba "Criar Personagem" ou carregue uma ficha salva.</p>
+            </div>
+        </div>
+        
+        <!-- Combat Calculator Tab -->
+        <div id="combat" class="tab-content">
+            <h2>Calculadora de Combate</h2>
+            
+            <div class="card">
+                <h3>Teste de Ataque</h3>
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="attackBonus">Bônus de Ataque</label>
+                        <input type="number" id="attackBonus" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="targetAC">CA do Alvo</label>
+                        <input type="number" id="targetAC" value="15">
+                    </div>
+                    <div class="form-group">
+                        <label>Vantagem/Desvantagem</label>
+                        <div>
+                            <input type="radio" id="normalRoll" name="advantage" value="normal" checked>
+                            <label for="normalRoll">Normal</label>
+                            
+                            <input type="radio" id="advantageRoll" name="advantage" value="advantage">
+                            <label for="advantageRoll">Vantagem</label>
+                            
+                            <input type="radio" id="disadvantageRoll" name="advantage" value="disadvantage">
+                            <label for="disadvantageRoll">Desvantagem</label>
+                        </div>
+                    </div>
+                </div>
+                <button id="rollAttack">Rolar Ataque</button>
+                <div id="attackResult" class="dice-result hidden"></div>
+            </div>
+            
+            <div class="card">
+                <h3>Cálculo de Dano</h3>
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="damageDice">Dados de Dano (ex: 1d8)</label>
+                        <input type="text" id="damageDice" value="1d8">
+                    </div>
+                    <div class="form-group">
+                        <label for="damageBonus">Bônus de Dano</label>
+                        <input type="number" id="damageBonus" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="criticalHit"> Ataque Crítico
+                        </label>
+                    </div>
+                </div>
+                <button id="rollDamage">Rolar Dano</button>
+                <div id="damageResult" class="dice-result hidden"></div>
+            </div>
+            
+            <div class="card">
+                <h3>Rolagem Personalizada</h3>
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="customDiceQty">Quantidade de Dados</label>
+                        <input type="number" id="customDiceQty" min="1" max="10" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="customDiceFaces">Faces do Dado</label>
+                        <select id="customDiceFaces">
+                            <option value="4">d4</option>
+                            <option value="6">d6</option>
+                            <option value="8">d8</option>
+                            <option value="10">d10</option>
+                            <option value="12">d12</option>
+                            <option value="20" selected>d20</option>
+                            <option value="100">d100</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="customModifier">Modificador</label>
+                        <input type="number" id="customModifier" value="0">
+                    </div>
+                </div>
+                <button id="rollCustom">Rolar Dados</button>
+                <div id="customResult" class="dice-result hidden"></div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Game Data
+        const gameData = {
+            races: {
+                "Anão": {
+                    subraces: {
+                        "Colina": {
+                            attributes: { "Sabedoria": 1 },
+                            traits: ["Resistência à Veneno", "Tolerância à Cansaço"]
+                        },
+                        "Montanha": {
+                            attributes: { "Força": 2 },
+                            traits: ["Treinamento com Armaduras Leves", "Resiliência de Pedra"]
+                        }
+                    },
+                    baseAttributes: { "Constituição": 2 },
+                    baseTraits: ["Visão no Escuro"],
+                    languages: ["Comum", "Anão"]
+                },
+                "Elfo": {
+                    subraces: {
+                        "Alto": {
+                            attributes: { "Inteligência": 1 },
+                            traits: ["Treinamento com Espadas Longas", "Truques Arcanos"]
+                        },
+                        "Floresta": {
+                            attributes: { "Sabedoria": 1 },
+                            traits: ["Caminhar sem Rastro", "Velocidade Élfica"]
+                        },
+                        "Negro": {
+                            attributes: { "Carisma": 1 },
+                            traits: ["Magia da Escuridão", "Treinamento com Espadas Curtas"]
+                        }
+                    },
+                    baseAttributes: { "Destreza": 2 },
+                    baseTraits: ["Visão no Escuro", "Imunidade a Sono"],
+                    languages: ["Comum", "Élfico"]
+                },
+                "Humano": {
+                    subraces: {
+                        "Padrão": {
+                            attributes: { "Força": 1, "Destreza": 1, "Constituição": 1, "Inteligência": 1, "Sabedoria": 1, "Carisma": 1 },
+                            traits: ["Versatilidade"]
+                        },
+                        "Variante": {
+                            attributes: {}, // +1 em dois atributos à escolha
+                            traits: ["Habilidade Extra", "Idioma Extra"]
+                        }
+                    },
+                    baseAttributes: {},
+                    baseTraits: [],
+                    languages: ["Comum", "1 adicional"]
+                }
+            },
+            classes: {
+                "Guerreiro": {
+                    hitDie: 10,
+                    proficiencies: ["Armaduras Pesadas", "Armas Simples e Marciais", "Escudos"],
+                    abilities: ["Ataque Extra", "Estilo de Combate"],
+                    equipment: ["Espada Longa", "Armadura de Cota de Malha", "Escudo"]
+                },
+                "Mago": {
+                    hitDie: 6,
+                    proficiencies: ["Varinhas", "Instrumentos de Escritório"],
+                    abilities: ["Magia Arcana", "Recuperação Arcana"],
+                    equipment: ["Varinha", "Livro de Feitiços", "Túnica"]
+                },
+                "Ladino": {
+                    hitDie: 8,
+                    proficiencies: ["Armas Leves", "Ferramentas de Ladrão"],
+                    abilities: ["Ataque Furtivo", "Esquiva Sombria"],
+                    equipment: ["Adaga", "Armadura Leve", "Kit de Aventureiro"]
+                }
+            },
+            skills: {
+                "FOR": ["Atletismo", "Intimidação"],
+                "DES": ["Acrobacia", "Furtividade", "Prestidigitação"],
+                "INT": ["Arcanismo", "História", "Investigação", "Natureza", "Religião"],
+                "SAB": ["Adestrar Animais", "Intuição", "Medicina", "Percepção", "Sobrevivência"],
+                "CAR": ["Atuação", "Enganação", "Intimidação", "Persuasão"]
+            },
+            equipment: {
+                "Espada Longa": { weight: 3, type: "arma", damage: "1d8", damageType: "cortante" },
+                "Adaga": { weight: 1, type: "arma", damage: "1d4", damageType: "perfurante" },
+                "Escudo": { weight: 6, type: "defesa", acBonus: 2 },
+                "Armadura Leve": { weight: 8, type: "armadura", acBonus: 2 },
+                "Armadura Pesada": { weight: 20, type: "armadura", acBonus: 5 },
+                "Kit de Aventureiro": { weight: 10, type: "utilitário" },
+                "Poção de Cura": { weight: 0.5, type: "consumível", effect: "Cura 2d4+2" },
+                "Varinha": { weight: 0.5, type: "foco" },
+                "Livro de Feitiços": { weight: 3, type: "utilitário" },
+                "Túnica": { weight: 1, type: "vestuário" }
+            }
+        };
 
-<header>Ficha de RPG</header>
+        // Current character data
+        let currentCharacter = null;
 
-<nav>
-    <button onclick="showTab('info')">Informações</button>
-    <button onclick="showTab('status')">Status e Ficha</button>
-    <button onclick="showTab('dados')">Dados</button>
-    <button onclick="showTab('itens')">Itens</button>
-    <button onclick="showTab('anotacoes')">Anotações</button>
-</nav>
+        // DOM Elements
+        const tabLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const characterForm = document.getElementById('characterForm');
+        const characterSheet = document.getElementById('characterSheet');
+        const noCharacter = document.getElementById('noCharacter');
+        const viewTab = document.getElementById('viewTab');
+        const skillsContainer = document.getElementById('skillsContainer');
+        const initialEquipment = document.getElementById('initialEquipment');
+        const additionalEquipment = document.getElementById('additionalEquipment');
+        const totalWeight = document.getElementById('totalWeight');
+        const equipmentSelect = document.getElementById('equipmentSelect');
+        const equipmentQty = document.getElementById('equipmentQty');
+        const addEquipmentBtn = document.getElementById('addEquipment');
+        const saveCharacterBtn = document.getElementById('saveCharacter');
+        const downloadCharacterBtn = document.getElementById('downloadCharacter');
+        const rollAttackBtn = document.getElementById('rollAttack');
+        const rollDamageBtn = document.getElementById('rollDamage');
+        const rollCustomBtn = document.getElementById('rollCustom');
+        const attackResult = document.getElementById('attackResult');
+        const damageResult = document.getElementById('damageResult');
+        const customResult = document.getElementById('customResult');
 
-<div id="info" class="tab active">
-    <h2>Informações do Personagem</h2>
-    <div class="section">
-        <label>Nome:</label>
-        <input type="text">
-        <label>Raça:</label>
-        <input type="text">
-        <label>Classe:</label>
-        <input type="text">
-        <label>Idade:</label>
-        <input type="text">
-        <label>Histórico:</label>
-        <textarea rows="4"></textarea>
-    </div>
-</div>
+        // Attribute inputs and modifiers
+        const attributeInputs = {
+            'str': document.getElementById('strValue'),
+            'dex': document.getElementById('dexValue'),
+            'con': document.getElementById('conValue'),
+            'int': document.getElementById('intValue'),
+            'wis': document.getElementById('wisValue'),
+            'cha': document.getElementById('chaValue')
+        };
 
-<div id="status" class="tab">
-    <h2>Status e Ficha</h2>
-    <div class="section">
-        <label>Nível:</label>
-        <input type="number">
-        <label>Vida:</label>
-        <input type="number">
-        <label>Mana:</label>
-        <input type="number">
-        <label>Sanidade:</label>
-        <input type="number">
-    </div>
-    <div class="section">
-        <h3>Atributos (Exemplo)</h3>
-        <label>Força:</label> 
-        <input type="number" id="forca">
-        <button onclick="rolar('forca')">Rolar d100</button>
-        <div id="resultado-forca"></div>
-    </div>
-</div>
+        const attributeMods = {
+            'str': document.getElementById('strMod'),
+            'dex': document.getElementById('dexMod'),
+            'con': document.getElementById('conMod'),
+            'int': document.getElementById('intMod'),
+            'wis': document.getElementById('wisMod'),
+            'cha': document.getElementById('chaMod')
+        };
 
-<div id="dados" class="tab">
-    <h2>Rolagem de Dados</h2>
-    <div class="section">
-        <button onclick="rolarDado(4)">D4</button>
-        <button onclick="rolarDado(6)">D6</button>
-        <button onclick="rolarDado(8)">D8</button>
-        <button onclick="rolarDado(10)">D10</button>
-        <button onclick="rolarDado(12)">D12</button>
-        <button onclick="rolarDado(20)">D20</button>
-        <button onclick="rolarDado(100)">D100</button>
-        <div id="resultado-dado"></div>
-    </div>
-</div>
+        // Sheet display elements
+        const sheetDisplays = {
+            'name': document.getElementById('sheetName'),
+            'player': document.getElementById('sheetPlayer'),
+            'level': document.getElementById('sheetLevel'),
+            'class': document.getElementById('sheetClass'),
+            'race': document.getElementById('sheetRace'),
+            'hp': document.getElementById('sheetHP'),
+            'ac': document.getElementById('sheetAC'),
+            'str': document.getElementById('sheetSTR'),
+            'dex': document.getElementById('sheetDEX'),
+            'con': document.getElementById('sheetCON'),
+            'int': document.getElementById('sheetINT'),
+            'wis': document.getElementById('sheetWIS'),
+            'cha': document.getElementById('sheetCHA'),
+            'strMod': document.getElementById('sheetSTRMod'),
+            'dexMod': document.getElementById('sheetDEXMod'),
+            'conMod': document.getElementById('sheetCONMod'),
+            'intMod': document.getElementById('sheetINTMod'),
+            'wisMod': document.getElementById('sheetWISMod'),
+            'chaMod': document.getElementById('sheetCHAMod'),
+            'skills': document.getElementById('sheetSkills'),
+            'traits': document.getElementById('sheetTraits'),
+            'equipment': document.getElementById('sheetEquipment'),
+            'weight': document.getElementById('sheetWeight'),
+            'abilities': document.getElementById('sheetAbilities')
+        };
 
-<div id="itens" class="tab">
-    <h2>Inventário</h2>
-    <div class="section">
-        <label>Item:</label>
-        <input type="text">
-        <label>Descrição:</label>
-        <textarea rows="2"></textarea>
-        <label>Peso:</label>
-        <input type="number">
-        <label>Quantidade:</label>
-        <input type="number">
-    </div>
-</div>
+        // Initialize the app
+        function init() {
+            // Setup tab navigation
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = link.getAttribute('data-tab');
+                    showTab(tabId);
+                });
+            });
 
-<div id="anotacoes" class="tab">
-    <h2>Anotações</h2>
-    <textarea rows="10" placeholder="Escreva aqui suas anotações..."></textarea>
-</div>
+            // Setup attribute modifiers calculation
+            Object.keys(attributeInputs).forEach(attr => {
+                attributeInputs[attr].addEventListener('change', calculateAttributeModifiers);
+            });
 
-<script>
-    function showTab(tabId) {
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        document.getElementById(tabId).classList.add('active');
-    }
+            // Setup race/class change handlers
+            document.getElementById('charRace').addEventListener('change', updateRaceInfo);
+            document.getElementById('charClass').addEventListener('change', updateClassInfo);
+            document.getElementById('charSubrace').addEventListener('change', updateSubraceInfo);
 
-    function rolar(atributoId) {
-        const atributo = parseInt(document.getElementById(atributoId).value) || 0;
-        const rolagem = Math.floor(Math.random() * 100) + 1;
-        const total = rolagem + atributo;
-        document.getElementById('resultado-' + atributoId).innerText = 
-            `Rolagem: ${rolagem} + Atributo: ${atributo} = Total: ${total}`;
-    }
+            // Setup equipment management
+            addEquipmentBtn.addEventListener('click', addEquipment);
+            
+            // Setup form submission
+            characterForm.addEventListener('submit', createCharacter);
+            
+            // Setup combat calculator
+            rollAttackBtn.addEventListener('click', rollAttack);
+            rollDamageBtn.addEventListener('click', rollDamage);
+            rollCustomBtn.addEventListener('click', rollCustom);
+            
+            // Setup save/download buttons
+            saveCharacterBtn.addEventListener('click', saveCharacter);
+            downloadCharacterBtn.addEventListener('click', downloadCharacter);
+            
+            // Initialize skills and equipment
+            populateSkills();
+            updateEquipmentSelect();
+            
+            // Show create tab by default
+            showTab('create');
+        }
 
-    function rolarDado(lados) {
-        const resultado = Math.floor(Math.random() * lados) + 1;
-        document.getElementById('resultado-dado').innerText = `Resultado do D${lados}: ${resultado}`;
-    }
-</script>
+        // Tab navigation
+        function showTab(tabId) {
+            // Update active tab link
+            tabLinks.forEach(link => {
+                if (link.getAttribute('data-tab') === tabId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+            
+            // Show corresponding tab content
+            tabContents.forEach(content => {
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+            
+            // Special handling for view tab
+            if (tabId === 'view') {
+                if (currentCharacter) {
+                    characterSheet.classList.remove('hidden');
+                    noCharacter.classList.add('hidden');
+                    displayCharacterSheet();
+                } else {
+                    characterSheet.classList.add('hidden');
+                    noCharacter.classList.remove('hidden');
+                }
+            }
+        }
 
+        // Calculate attribute modifiers
+        function calculateAttributeModifiers() {
+            Object.keys(attributeInputs).forEach(attr => {
+                const value = parseInt(attributeInputs[attr].value) || 10;
+                const mod = Math.floor((value - 10) / 2);
+                attributeMods[attr].textContent = mod >= 0 ? `+${mod}` : mod;
+            });
+        }
+
+        // Update race information
+        function updateRaceInfo() {
+            const raceSelect = document.getElementById('charRace');
+            const subraceGroup = document.getElementById('subraceGroup');
+            const subraceSelect = document.getElementById('charSubrace');
+            const race = raceSelect.value;
+            
+            // Reset all attribute values to base (10)
+            Object.keys(attributeInputs).forEach(attr => {
+                attributeInputs[attr].value = 10;
+            });
+            
+            // Show/hide subrace selector
+            if (race && gameData.races[race].subraces) {
+                subraceGroup.style.display = 'block';
+                
+                // Populate subraces
+                subraceSelect.innerHTML = '<option value="">Selecione uma sub-raça</option>';
+                Object.keys(gameData.races[race].subraces).forEach(subrace => {
+                    const option = document.createElement('option');
+                    option.value = subrace;
+                    option.textContent = subrace;
+                    subraceSelect.appendChild(option);
+                });
+            } else {
+                subraceGroup.style.display = 'none';
+                subraceSelect.innerHTML = '<option value="">Selecione uma sub-raça</option>';
+            }
+            
+            calculateAttributeModifiers();
+        }
+
+        // Update subrace information
+        function updateSubraceInfo() {
+            const race = document.getElementById('charRace').value;
+            const subrace = document.getElementById('charSubrace').value;
+            
+            if (!race || !subrace || !gameData.races[race] || !gameData.races[race].subraces[subrace]) return;
+            
+            // Reset attributes to base race values first
+            Object.keys(attributeInputs).forEach(attr => {
+                attributeInputs[attr].value = 10;
+            });
+            
+            // Apply base race bonuses
+            const baseBonuses = gameData.races[race].baseAttributes || {};
+            Object.keys(baseBonuses).forEach(attrName => {
+                const attr = attrName.substring(0, 3).toLowerCase();
+                if (attributeInputs[attr]) {
+                    attributeInputs[attr].value = 10 + baseBonuses[attrName];
+                }
+            });
+            
+            // Apply subrace bonuses
+            const subraceBonuses = gameData.races[race].subraces[subrace].attributes || {};
+            Object.keys(subraceBonuses).forEach(attrName => {
+                const attr = attrName.substring(0, 3).toLowerCase();
+                if (attributeInputs[attr]) {
+                    attributeInputs[attr].value = parseInt(attributeInputs[attr].value) + subraceBonuses[attrName];
+                }
+            });
+            
+            calculateAttributeModifiers();
+        }
+
+        // Update class information
+        function updateClassInfo() {
+            const classSelect = document.getElementById('charClass');
+            const charClass = classSelect.value;
+            
+            // Update initial equipment
+            initialEquipment.innerHTML = '';
+            if (charClass && gameData.classes[charClass]) {
+                gameData.classes[charClass].equipment.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = `${item} (${gameData.equipment[item].weight}kg)`;
+                    initialEquipment.appendChild(li);
+                });
+            }
+            
+            // Update total weight
+            updateTotalWeight();
+        }
+
+        // Populate skills checkboxes
+        function populateSkills() {
+            skillsContainer.innerHTML = '';
+            
+            // Flatten all skills
+            const allSkills = [];
+            Object.keys(gameData.skills).forEach(attr => {
+                gameData.skills[attr].forEach(skill => {
+                    allSkills.push({
+                        name: skill,
+                        attribute: attr
+                    });
+                });
+            });
+            
+            // Create checkboxes
+            allSkills.forEach(skill => {
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `skill_${skill.name}`;
+                checkbox.name = 'pericias';
+                checkbox.value = skill.name;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `skill_${skill.name}`;
+                label.textContent = `${skill.name} (${skill.attribute})`;
+                
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                skillsContainer.appendChild(div);
+            });
+        }
+
+        // Update equipment select dropdown
+        function updateEquipmentSelect() {
+            equipmentSelect.innerHTML = '<option value="">Selecione um item</option>';
+            
+            Object.keys(gameData.equipment).forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = `${item} (${gameData.equipment[item].weight}kg)`;
+                equipmentSelect.appendChild(option);
+            });
+        }
+
+        // Add equipment to additional list
+        function addEquipment() {
+            const itemName = equipmentSelect.value;
+            const qty = parseInt(equipmentQty.value) || 1;
+            
+            if (!itemName) return;
+            
+            const li = document.createElement('li');
+            li.className = 'equipment-item';
+            li.innerHTML = `
+                ${itemName} x${qty} (${gameData.equipment[itemName].weight}kg cada)
+                <button class="btn-danger remove-equipment">Remover</button>
+            `;
+            
+            li.querySelector('.remove-equipment').addEventListener('click', () => {
+                li.remove();
+                updateTotalWeight();
+            });
+            
+            additionalEquipment.appendChild(li);
+            updateTotalWeight();
+        }
+
+        // Calculate total equipment weight
+        function updateTotalWeight() {
+            let weight = 0;
+            
+            // Initial equipment
+            const charClass = document.getElementById('charClass').value;
+            if (charClass && gameData.classes[charClass]) {
+                gameData.classes[charClass].equipment.forEach(item => {
+                    weight += gameData.equipment[item].weight;
+                });
+            }
+            
+            // Additional equipment
+            const items = additionalEquipment.querySelectorAll('li');
+            items.forEach(item => {
+                const text = item.textContent;
+                const match = text.match(/x(\d+).*?\(([\d.]+)kg/);
+                if (match) {
+                    const qty = parseInt(match[1]);
+                    const itemWeight = parseFloat(match[2]);
+                    weight += qty * itemWeight;
+                }
+            });
+            
+            totalWeight.textContent = weight.toFixed(1);
+        }
+
+        // Create character from form
+        function createCharacter(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('charName').value;
+            const player = document.getElementById('playerName').value;
+            const level = parseInt(document.getElementById('charLevel').value) || 1;
+            const race = document.getElementById('charRace').value;
+            const subrace = document.getElementById('charSubrace').value;
+            const charClass = document.getElementById('charClass').value;
+            
+            // Get attributes
+            const attributes = {
+                'FOR': parseInt(attributeInputs['str'].value) || 10,
+                'DES': parseInt(attributeInputs['dex'].value) || 10,
+                'CON': parseInt(attributeInputs['con'].value) || 10,
+                'INT': parseInt(attributeInputs['int'].value) || 10,
+                'SAB': parseInt(attributeInputs['wis'].value) || 10,
+                'CAR': parseInt(attributeInputs['cha'].value) || 10
+            };
+            
+            // Get skills
+            const skillCheckboxes = document.querySelectorAll('input[name="pericias"]:checked');
+            const skills = Array.from(skillCheckboxes).map(cb => cb.value);
+            
+            // Get equipment
+            const equipment = [];
+            
+            // Initial equipment
+            if (charClass && gameData.classes[charClass]) {
+                gameData.classes[charClass].equipment.forEach(item => {
+                    equipment.push({
+                        name: item,
+                        quantity: 1,
+                        ...gameData.equipment[item]
+                    });
+                });
+            }
+            
+            // Additional equipment
+            const additionalItems = additionalEquipment.querySelectorAll('li');
+            additionalItems.forEach(item => {
+                const text = item.textContent;
+                const match = text.match(/(.*?)x(\d+).*?\(([\d.]+)kg/);
+                if (match) {
+                    const itemName = match[1].trim();
+                    const qty = parseInt(match[2]);
+                    const weight = parseFloat(match[3]);
+                    
+                    equipment.push({
+                        name: itemName,
+                        quantity: qty,
+                        ...gameData.equipment[itemName]
+                    });
+                }
+            });
+            
+            // Calculate HP
+            const baseHP = gameData.classes[charClass].hitDie;
+            const conMod = Math.floor((attributes['CON'] - 10) / 2);
+            let hp = baseHP + conMod;
+            
+            for (let i = 1; i < level; i++) {
+                hp += randomInt(1, baseHP) + conMod;
+            }
+            
+            hp = Math.max(1, hp);
+            
+            // Calculate AC (base 10 + DEX mod + equipment bonuses)
+            let ac = 10 + Math.floor((attributes['DES'] - 10) / 2);
+            equipment.forEach(item => {
+                if (item.acBonus) {
+                    ac += item.acBonus;
+                }
+            });
+            
+            // Combine base traits and subrace traits
+            const traits = [...gameData.races[race].baseTraits];
+            if (subrace && gameData.races[race].subraces[subrace]) {
+                traits.push(...gameData.races[race].subraces[subrace].traits);
+            }
+            
+            // Create character object
+            currentCharacter = {
+                name,
+                player,
+                level,
+                race,
+                subrace,
+                class: charClass,
+                attributes,
+                skills,
+                equipment,
+                weight: parseFloat(totalWeight.textContent) || 0,
+                hp,
+                ac,
+                abilities: gameData.classes[charClass].abilities,
+                traits,
+                languages: gameData.races[race].languages
+            };
+            
+            // Show the character sheet
+            showTab('view');
+        }
+
+        // Display character sheet
+        function displayCharacterSheet() {
+            if (!currentCharacter) return;
+            
+            const char = currentCharacter;
+            
+            // Basic info
+            sheetDisplays.name.textContent = char.name;
+            sheetDisplays.player.textContent = char.player;
+            sheetDisplays.level.textContent = char.level;
+            sheetDisplays.class.textContent = char.class;
+            sheetDisplays.race.textContent = `${char.race}${char.subrace ? ` (${char.subrace})` : ''}`;
+            sheetDisplays.hp.textContent = char.hp;
+            sheetDisplays.ac.textContent = char.ac;
+            
+            // Attributes
+            sheetDisplays.str.textContent = char.attributes.FOR;
+            sheetDisplays.dex.textContent = char.attributes.DES;
+            sheetDisplays.con.textContent = char.attributes.CON;
+            sheetDisplays.int.textContent = char.attributes.INT;
+            sheetDisplays.wis.textContent = char.attributes.SAB;
+            sheetDisplays.cha.textContent = char.attributes.CAR;
+            
+            // Attribute modifiers
+            sheetDisplays.strMod.textContent = formatModifier(char.attributes.FOR);
+            sheetDisplays.dexMod.textContent = formatModifier(char.attributes.DES);
+            sheetDisplays.conMod.textContent = formatModifier(char.attributes.CON);
+            sheetDisplays.intMod.textContent = formatModifier(char.attributes.INT);
+            sheetDisplays.wisMod.textContent = formatModifier(char.attributes.SAB);
+            sheetDisplays.chaMod.textContent = formatModifier(char.attributes.CAR);
+            
+            // Skills
+            sheetDisplays.skills.innerHTML = '';
+            char.skills.forEach(skill => {
+                const span = document.createElement('span');
+                span.className = 'badge';
+                span.textContent = skill;
+                sheetDisplays.skills.appendChild(span);
+            });
+            
+            // Traits
+            sheetDisplays.traits.innerHTML = '';
+            char.traits.forEach(trait => {
+                const p = document.createElement('p');
+                p.textContent = `- ${trait}`;
+                sheetDisplays.traits.appendChild(p);
+            });
+            
+            // Equipment
+            sheetDisplays.equipment.innerHTML = '';
+            char.equipment.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'equipment-item';
+                
+                let info = `${item.name} x${item.quantity}`;
+                if (item.weight) {
+                    info += ` (${item.weight}kg cada)`;
+                }
+                if (item.damage) {
+                    info += ` | Dano: ${item.damage} ${item.damageType || ''}`;
+                }
+                if (item.acBonus) {
+                    info += ` | CA +${item.acBonus}`;
+                }
+                
+                div.textContent = info;
+                sheetDisplays.equipment.appendChild(div);
+            });
+            
+            sheetDisplays.weight.textContent = char.weight.toFixed(1);
+            
+            // Abilities
+            sheetDisplays.abilities.innerHTML = '';
+            char.abilities.forEach(ability => {
+                const p = document.createElement('p');
+                p.textContent = `- ${ability}`;
+                sheetDisplays.abilities.appendChild(p);
+            });
+        }
+
+        // Format attribute modifier
+        function formatModifier(value) {
+            const mod = Math.floor((value - 10) / 2);
+            return mod >= 0 ? `+${mod}` : mod;
+        }
+
+        // Save character to localStorage
+        function saveCharacter() {
+            if (!currentCharacter) return;
+            
+            try {
+                localStorage.setItem('rpgCharacter', JSON.stringify(currentCharacter));
+                alert('Personagem salvo com sucesso!');
+            } catch (e) {
+                alert('Erro ao salvar personagem: ' + e.message);
+            }
+        }
+
+        // Download character as JSON file
+        function downloadCharacter() {
+            if (!currentCharacter) return;
+            
+            const data = JSON.stringify(currentCharacter, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentCharacter.name.replace(/ /g, '_')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Roll attack
+        function rollAttack() {
+            const bonus = parseInt(document.getElementById('attackBonus').value) || 0;
+            const ac = parseInt(document.getElementById('targetAC').value) || 10;
+            const advantage = document.querySelector('input[name="advantage"]:checked').value;
+            
+            let roll1 = randomInt(1, 20);
+            let roll2 = null;
+            let total = roll1 + bonus;
+            let isCritical = roll1 === 20;
+            let isFumble = roll1 === 1;
+            
+            // Handle advantage/disadvantage
+            if (advantage !== 'normal') {
+                roll2 = randomInt(1, 20);
+                isCritical = isCritical || roll2 === 20;
+                isFumble = isFumble && roll2 === 1;
+                
+                if (advantage === 'advantage') {
+                    total = Math.max(roll1, roll2) + bonus;
+                } else {
+                    total = Math.min(roll1, roll2) + bonus;
+                }
+            }
+            
+            // Display result
+            let resultHTML = `
+                <p><strong>Rolagem:</strong> ${roll1}${roll2 ? `, ${roll2}` : ''} + ${bonus} = ${total}</p>
+                <p><strong>AC do Alvo:</strong> ${ac}</p>
+            `;
+            
+            if (isCritical) {
+                resultHTML += `<p class="critical">ACERTO CRÍTICO!</p>`;
+            } else if (isFumble) {
+                resultHTML += `<p class="critical">FALHA CRÍTICA!</p>`;
+            } else if (total >= ac) {
+                resultHTML += `<p class="hit">ACERTOU!</p>`;
+            } else {
+                resultHTML += `<p class="miss">ERROU!</p>`;
+            }
+            
+            attackResult.innerHTML = resultHTML;
+            attackResult.classList.remove('hidden');
+        }
+
+        // Roll damage
+        function rollDamage() {
+            const diceExpr = document.getElementById('damageDice').value;
+            const bonus = parseInt(document.getElementById('damageBonus').value) || 0;
+            const isCritical = document.getElementById('criticalHit').checked;
+            
+            try {
+                const [numDice, diceFaces] = diceExpr.split('d').map(Number);
+                let totalDice = isCritical ? numDice * 2 : numDice;
+                
+                const rolls = [];
+                for (let i = 0; i < totalDice; i++) {
+                    rolls.push(randomInt(1, diceFaces));
+                }
+                
+                const total = rolls.reduce((sum, roll) => sum + roll, 0) + bonus;
+                
+                let resultHTML = `
+                    <p><strong>Rolagem:</strong> ${rolls.join(', ')} + ${bonus} = ${total}</p>
+                `;
+                
+                if (isCritical) {
+                    resultHTML += `<p class="critical">DANO CRÍTICO!</p>`;
+                }
+                
+                damageResult.innerHTML = resultHTML;
+                damageResult.classList.remove('hidden');
+            } catch (e) {
+                damageResult.innerHTML = `<p class="miss">Formato inválido. Use formato como "1d8" ou "2d6"</p>`;
+                damageResult.classList.remove('hidden');
+            }
+        }
+
+        // Roll custom dice
+        function rollCustom() {
+            const numDice = parseInt(document.getElementById('customDiceQty').value) || 1;
+            const diceFaces = parseInt(document.getElementById('customDiceFaces').value) || 20;
+            const modifier = parseInt(document.getElementById('customModifier').value) || 0;
+            
+            const rolls = [];
+            for (let i = 0; i < numDice; i++) {
+                rolls.push(randomInt(1, diceFaces));
+            }
+            
+            const total = rolls.reduce((sum, roll) => sum + roll, 0) + modifier;
+            
+            let resultHTML = `
+                <p><strong>Rolagem:</strong> ${rolls.join(', ')} ${modifier >= 0 ? '+' : ''}${modifier} = ${total}</p>
+            `;
+            
+            customResult.innerHTML = resultHTML;
+            customResult.classList.remove('hidden');
+        }
+
+        // Helper function to generate random integer
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
